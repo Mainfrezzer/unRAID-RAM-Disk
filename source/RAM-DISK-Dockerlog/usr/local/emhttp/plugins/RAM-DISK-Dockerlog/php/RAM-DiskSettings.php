@@ -1,6 +1,6 @@
 <?php
 $configFilePath = '/boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg';
-$modcheck = "/usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified";
+$modcheck = "/tmp/RAM-DISK-Dockerlog/modified";
 if (!file_exists($configFilePath)) {
     die("Configuration file not found.");
 }

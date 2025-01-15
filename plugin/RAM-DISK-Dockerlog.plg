@@ -54,11 +54,7 @@ if [ ! -f "&plgPATH;/settings.cfg" ] ; then
   echo "30" > "&plgPATH;/settings.cfg"
 fi
   upgradepkg --install-new &plgPATH;/&plgNAME;.txz
-fi
-
-if [ -f "/usr/local/emhttp/plugins/RAM-DISK_for_Docker/modified" ] ; then
-echo "Previous version Script was run. Not running it again until a reboot..."
-cp /usr/local/emhttp/plugins/RAM-DISK_for_Docker/modified &emhttp;/
+  mkdir -p /tmp/&plgNAME;
 fi
 
 # Cleaning old source files

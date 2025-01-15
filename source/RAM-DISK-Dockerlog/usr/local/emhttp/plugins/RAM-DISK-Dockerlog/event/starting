@@ -1,7 +1,7 @@
 #!/bin/bash
 source /etc/unraid-version
 
-if [ ! -f /usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified ]; then
+if [ ! -f /tmp/RAM-DISK-Dockerlog/modified ]; then
 interval=$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
 
 case "$version" in
@@ -49,7 +49,7 @@ sed -i '/^<?PHP$/a \
       fi\
     ");\
   }' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-echo $version > /usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified
+echo $version > /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Modification applied for $version"
 else
   logger -t docker "Error: RAM-Disk Mod found incompatible files: $(md5sum /etc/rc.d/rc.docker /usr/local/emhttp/plugins/dynamix/scripts/monitor | xargs)"
@@ -99,7 +99,7 @@ if [[ $compatible ]]; then
       fi\
     ");\
   }' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-echo $version > /usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified
+echo $version > /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Modification applied for $version"
 else
   logger -t docker "Error: RAM-Disk Mod found incompatible files: $(md5sum /etc/rc.d/rc.docker /usr/local/emhttp/plugins/dynamix/scripts/monitor | xargs)"
@@ -149,7 +149,7 @@ if [[ $compatible ]]; then
       fi\
     ");\
   }' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-echo $version > /usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified
+echo $version > /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Modification applied for $version"
 else
   logger -t docker "Error: RAM-Disk Mod found incompatible files: $(md5sum /etc/rc.d/rc.docker /usr/local/emhttp/plugins/dynamix/scripts/monitor | xargs)"
@@ -199,7 +199,7 @@ if [[ $compatible ]]; then
       fi\
     ");\
   }' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-echo $version > /usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified
+echo $version > /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Modification applied for $version"
 else
   logger -t docker "Error: RAM-Disk Mod found incompatible files: $(md5sum /etc/rc.d/rc.docker /usr/local/emhttp/plugins/dynamix/scripts/monitor | xargs)"
@@ -249,7 +249,7 @@ if [[ $compatible ]]; then
       fi\
     ");\
   }' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-echo $version > /usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified
+echo $version > /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Modification applied for $version"
 else
   logger -t docker "Error: RAM-Disk Mod found incompatible files: $(md5sum /etc/rc.d/rc.docker /usr/local/emhttp/plugins/dynamix/scripts/monitor | xargs)"
@@ -299,7 +299,7 @@ if [[ $compatible ]]; then
       fi\
     ");\
   }' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-echo $version > /usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified
+echo $version > /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Modification applied for $version"
 else
   logger -t docker "Error: RAM-Disk Mod found incompatible files: $(md5sum /etc/rc.d/rc.docker /usr/local/emhttp/plugins/dynamix/scripts/monitor | xargs)"
@@ -349,7 +349,7 @@ if [[ $compatible ]]; then
       fi\
     ");\
   }' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-echo $version > /usr/local/emhttp/plugins/RAM-DISK-Dockerlog/modified
+echo $version > /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Modification applied for $version"
 else
   logger -t docker "Error: RAM-Disk Mod found incompatible files: $(md5sum /etc/rc.d/rc.docker /usr/local/emhttp/plugins/dynamix/scripts/monitor | xargs)"
