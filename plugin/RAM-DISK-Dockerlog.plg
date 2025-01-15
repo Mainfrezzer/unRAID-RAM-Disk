@@ -1,0 +1,96 @@
+<?xml version='1.0' standalone='yes'?>
+
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "RAM-DISK-Dockerlog">
+<!ENTITY author    "Mainfrezzer">
+<!ENTITY version   "2025.01.14a">
+<!ENTITY launch    "Settings/RAM-Disk">
+<!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/main">
+<!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
+<!ENTITY plgPATH   "/boot/config/plugins/&name;">
+<!ENTITY plgNAME   "&name;-&version;-x86_64-1">
+<!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+]>
+
+<PLUGIN icon="microchip" name="&name;" author="&author;" launch="&launch;" version="&version;" pluginURL="&pluginURL;"  min="6.12.10" support="https://forums.unraid.net/topic/136087-ram-disk-for-docker-statuslog-files/">
+
+<CHANGES>
+##&name;
+###2025.01.14a
+Initial Release
+</CHANGES>
+
+<!--
+The 'plugin' package file.
+-->
+<FILE Name="&plgPATH;/&plgNAME;.txz">
+<URL>&gitURL;/archive/&plgNAME;.txz</URL>
+</FILE>
+
+<!--
+The 'plugin' package MD5 hash.
+-->
+<FILE Name="&plgPATH;/&plgNAME;.md5">
+<URL>&gitURL;/archive/&plgNAME;.md5</URL>
+</FILE>
+
+<!--
+The 'install' script.
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+
+# Verify and install plugin package
+sum1=$(/usr/bin/md5sum &plgPATH;/&plgNAME;.txz)
+sum2=$(/usr/bin/cat &plgPATH;/&plgNAME;.md5)
+if [ "${sum1:0:32}" != "${sum2:0:32}" ]; then
+  echo "Wrong 'plugin' package md5 hash."
+  rm &plgPATH;/&plgNAME;.txz
+  rm &plgPATH;/&plgNAME;.md5
+  exit 1
+else
+if [ ! -f "&plgPATH;/settings.cfg" ] ; then
+  echo "Configuration file not found. Creating configuration file..."
+  echo "30" > "&plgPATH;/settings.cfg"
+fi
+  upgradepkg --install-new &plgPATH;/&plgNAME;.txz
+fi
+
+if [ -f "/usr/local/emhttp/plugins/RAM-DISK_for_Docker/modified" ] ; then
+echo "Previous version Script was run. Not running it again until a reboot..."
+cp /usr/local/emhttp/plugins/RAM-DISK_for_Docker/modified &emhttp;/
+fi
+
+# Cleaning old source files
+find &plgPATH;/ -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
+find &plgPATH;/ -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been installed."
+echo " Version: &version; by &author;"
+echo "-----------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+<!--
+The 'remove' script.
+-->
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+removepkg &plgPATH;/&plgNAME;.txz
+rm -rf &emhttp;
+rm -rf &plgPATH;
+
+echo ""
+echo ""
+echo "------------------------------------------------------------------------------"
+echo "---------RAM-Disk for Docker uninstalled, please reboot your server!----------"
+echo "------------------------------------------------------------------------------"
+echo ""
+echo ""
+
+</INLINE>
+</FILE>
+
+</PLUGIN>

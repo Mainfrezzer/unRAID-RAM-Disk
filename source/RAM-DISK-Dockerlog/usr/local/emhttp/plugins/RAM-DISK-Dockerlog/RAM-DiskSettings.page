@@ -1,0 +1,5 @@
+Menu="RAM-Disk:1"
+Title="RAM-Disk for Docker logs"
+Tag="microchip"
+---
+<?php include '/usr/local/emhttp/plugins/RAM-DISK-Dockerlog/php/RAM-DiskSettings.php';?>

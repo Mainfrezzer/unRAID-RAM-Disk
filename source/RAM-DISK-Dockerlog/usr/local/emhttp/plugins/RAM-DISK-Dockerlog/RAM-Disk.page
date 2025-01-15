@@ -1,0 +1,6 @@
+Menu="Utilities"
+Icon="microchip"
+Title="RAM-DISK for Docker logs"
+Type="xmenu"
+Tabs="true"
+---
