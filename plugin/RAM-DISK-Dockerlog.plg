@@ -54,7 +54,7 @@ if [ ! -f "&plgPATH;/settings.cfg" ] ; then
   echo "30" > "&plgPATH;/settings.cfg"
 fi
   upgradepkg --install-new &plgPATH;/&plgNAME;.txz
-  mkdir -p /tmp/&plgNAME;
+  mkdir -p /tmp/&name;
 fi
 
 # Cleaning old source files
