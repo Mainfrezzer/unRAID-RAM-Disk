@@ -62,10 +62,11 @@ find &plgPATH;/ -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
 find &plgPATH;/ -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
 
 echo ""
-echo "-----------------------------------------------------------"
-echo " &name; has been installed."
-echo " Version: &version; by &author;"
-echo "-----------------------------------------------------------"
+echo "------------------------------------------------------------"
+echo "---------------- &name; has been installed. ----------------"
+echo "------------- Version: &version; by &author; ---------------"
+echo "--------------------- Scripts by MGutt ---------------------"
+echo "------------------------------------------------------------"
 echo ""
 </INLINE>
 </FILE>
@@ -81,7 +82,7 @@ rm -rf &plgPATH;
 echo ""
 echo ""
 echo "------------------------------------------------------------------------------"
-echo "---------RAM-Disk for Docker uninstalled, please reboot your server!----------"
+echo "-------RAM-Disk for Docker logs uninstalled, please reboot your server!-------"
 echo "------------------------------------------------------------------------------"
 echo ""
 echo ""
