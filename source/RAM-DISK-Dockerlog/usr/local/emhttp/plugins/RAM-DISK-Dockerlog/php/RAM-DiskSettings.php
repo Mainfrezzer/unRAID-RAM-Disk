@@ -18,14 +18,14 @@ function writeSetting($file, $value) {
 $settingValue = readSetting($configFilePath);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $userInput = isset($_POST['setting']) ? intval($_POST['setting']) : 0;
+    $userInput = isset($_POST['setting']) ? intval($_POST['setting']) : 1;
 
-    if ($userInput >= 0 && $userInput <= 60) {
+    if ($userInput >= 1 && $userInput <= 60) {
         writeSetting($configFilePath, $userInput);
         $settingValue = readSetting($configFilePath);
         $message = "Setting updated successfully.";
     } else {
-        $message = "Please enter a value between 0 and 60.";
+        $message = "Please enter a value between 1 and 60.";
     }
 }
 
@@ -69,8 +69,8 @@ function check_file_exists($modcheck) {
 <div style="width:49%; float:left; border: 0em solid black;">
 The interval is set in minutes (0-60)
     <form method="post" action="">
-        <!-- debug <label for="setting">Current Value: <?php echo htmlspecialchars($settingValue); ?></label> --><br>
-        <input type="number" id="setting" name="setting" min="0" max="60" value="<?php echo htmlspecialchars($settingValue); ?>" required>
+        <br>
+        <input type="number" id="setting" name="setting" min="1" max="60" value="<?php echo htmlspecialchars($settingValue); ?>" required>
         <input type="submit" value="Save">
     </form>
 </div>
