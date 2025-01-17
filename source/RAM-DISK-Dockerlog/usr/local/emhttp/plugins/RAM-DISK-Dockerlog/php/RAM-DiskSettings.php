@@ -67,7 +67,7 @@ function check_file_exists($modcheck) {
         <p><strong><?php echo htmlspecialchars($message); ?></strong></p>
     <?php endif; ?>
 <div style="width:49%; float:left; border: 0em solid black;">
-The interval is set in minutes (0-60)
+<p>The interval is set in minutes (1-60)</p>
     <form method="post" action="">
         <br>
         <input type="number" id="setting" name="setting" min="1" max="60" value="<?php echo htmlspecialchars($settingValue); ?>" required>
