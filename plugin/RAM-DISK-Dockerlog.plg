@@ -63,8 +63,8 @@ find &plgPATH;/ -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
 
 echo ""
 echo "------------------------------------------------------------"
-echo "---------------- &name; has been installed. ----------------"
-echo "------------- Version: &version; by &author; ---------------"
+echo "---------- &name; has been installed. ----------"
+echo "----------- Version: &version; by &author; -------------"
 echo "--------------------- Scripts by MGutt ---------------------"
 echo "------------------------------------------------------------"
 echo ""
