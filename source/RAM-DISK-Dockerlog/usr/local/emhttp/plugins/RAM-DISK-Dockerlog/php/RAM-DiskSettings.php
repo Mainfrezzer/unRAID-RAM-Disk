@@ -87,7 +87,7 @@ function check_file_exists($modcheck) {
 <blockquote class="inline_help" style="display: block; align=right">
     <p>This Plugin runs the script below only once. You can see the status, if it ran or not, on the left.<br/></p>
     <p>If you install this for the <b>first time</b> or you updated the plugin to support your current Unraid version, you can simply <b>stop and start the array</b> to use it. Alternatively perfom a <b>reboot.</b></p>
-    <p><b style="color: #ff0000;">ATTENTION:</b><b> To remove the script, remove the plugin and perform a reboot.</b></p>
+    <p><b style="color: #ff0000;">ATTENTION:</b><b> To remove the plugin, please stop your array and then remove the plugin. If you remove the plugin without stopping the array, you have to perform a reboot.</b></p>
     <p>There are multiple checks to ensure nothing breaks, you can update to a new version or downgrade to any version without issue</p>
     <p>If you see "No script found for this version", this means the plugin has no support for your current Unraid version. An update might change that.</p>
     <p>This is only possible thanks to MGutt and his script. <a href="https://forums.unraid.net/topic/136087-ram-disk-for-docker-statuslog-files" target="_blank">https://forums.unraid.net/topic/136087-ram-disk-for-docker-statuslog-files</a><p>

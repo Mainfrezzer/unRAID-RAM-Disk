@@ -8,7 +8,7 @@ if [[ $compatible ]]; then
 
 # create RAM-Disk on starting the docker service
 sed -i '/^  echo "starting \$BASE ..."$/i \
-  # move json/logs to ram disk\
+  # move json/logs to RAM-Disk\
   rsync -aH --delete /var/lib/docker/containers/ ${DOCKER_APP_CONFIG_PATH%/}/containers_backup\
   mountpoint -q /var/lib/docker/containers || mount -t tmpfs tmpfs /var/lib/docker/containers || logger -t docker Error: RAM-Disk could not be mounted!\
   rsync -aH --delete ${DOCKER_APP_CONFIG_PATH%/}/containers_backup/ /var/lib/docker/containers\

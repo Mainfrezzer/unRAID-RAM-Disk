@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "RAM-DISK-Dockerlog">
 <!ENTITY author    "Mainfrezzer">
-<!ENTITY version   "2025.01.18">
+<!ENTITY version   "2025.01.18a">
 <!ENTITY launch    "Settings/RAM-Disk">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/main">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -16,6 +16,8 @@
 
 <CHANGES>
 ##&name;
+###2025.01.18a
+Upon array stop, it will remove all modifications. Allows for uninstalling without reboot
 ###2025.01.18
 Disable the automatic backup by setting the interval to 0
 ###2025.01.17
@@ -55,9 +57,6 @@ if [ ! -f "&plgPATH;/settings.cfg" ] ; then
   echo "Configuration file not found. Creating configuration file..."
   echo "30" > "&plgPATH;/settings.cfg"
 fi
-  #ensure no prior versions code exists
-  sed -i '/\$sync_interval_minutes=/,/^\s*}/d' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-  
   upgradepkg --install-new &plgPATH;/&plgNAME;.txz
   mkdir -p /tmp/&name;
 fi
@@ -86,6 +85,7 @@ removepkg &plgPATH;/&plgNAME;.txz
 rm -rf &emhttp;
 rm -rf &plgPATH;
 
+if [ -f "/tmp/RAM-DISK-Dockerlog/modified" ] ; then
 echo ""
 echo ""
 echo "------------------------------------------------------------------------------"
@@ -93,7 +93,15 @@ echo "-------RAM-Disk for Docker logs uninstalled, please reboot your server!---
 echo "------------------------------------------------------------------------------"
 echo ""
 echo ""
-
+else
+echo ""
+echo ""
+echo "------------------------------------------------------------------------------"
+echo "-------------------RAM-Disk for Docker has been uninstalled!------------------"
+echo "------------------------------------------------------------------------------"
+echo ""
+echo ""
+fi
 </INLINE>
 </FILE>
 
