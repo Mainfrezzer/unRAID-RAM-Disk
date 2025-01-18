@@ -1,9 +1,9 @@
 # -------------------------------------------------
-# RAM-Disk for Docker json/log files v1.6 for 6.11.5
+# RAM-Disk for Docker json/log files based on https://forums.unraid.net/topic/136087-ram-disk-for-docker-statuslog-files/ | MGutt
 # -------------------------------------------------
 
 # check compatibility
-echo -e "070c1801284b907607de5a64d6779ffb /etc/rc.d/rc.docker\n0cefe998468c6d4c6ed075c150f8a233 /usr/local/emhttp/plugins/dynamix/scripts/monitor" | md5sum --check --status && compatible=1
+echo -e "070c1801284b907607de5a64d6779ffb /etc/rc.d/rc.docker" | md5sum --check --status && compatible=1
 if [[ $compatible ]]; then
 
 # create RAM-Disk on starting the docker service
@@ -22,27 +22,33 @@ sed -i '/^  # tear down the bridge$/i \
   rsync -aH --delete ${DOCKER_APP_CONFIG_PATH%/}/containers_backup/ /var/lib/docker/containers\
   logger -t docker RAM-Disk removed' /etc/rc.d/rc.docker
 
-# Automatically backup Docker RAM-Disk
-sed -i '/^<?PHP$/a \
-  $sync_interval_minutes='${interval}';\
-  if ( ! ((date("i") * date("H") * 60 + date("i")) % $sync_interval_minutes) && file_exists("/var/lib/docker/containers")) {\
-    exec("\
-      [[ ! -d /var/lib/docker_bind ]] && mkdir /var/lib/docker_bind\
-      if ! mountpoint -q /var/lib/docker_bind; then\
-        if ! mount --bind /var/lib/docker /var/lib/docker_bind; then\
-          logger -t docker Error: RAM-Disk bind mount failed!\
-        fi\
-      fi\
-      if mountpoint -q /var/lib/docker_bind; then\
-        rsync -aH --delete /var/lib/docker/containers/ /var/lib/docker_bind/containers && logger -t docker Success: Backup of RAM-Disk created.\
-        umount -l /var/lib/docker_bind\
-      else\
-        logger -t docker Error: RAM-Disk bind mount failed!\
-      fi\
-    ");\
-  }' /usr/local/emhttp/plugins/dynamix/scripts/monitor
-echo $version > /tmp/RAM-DISK-Dockerlog/modified
+ # Docker RAM-Disk backup
+  echo '<?php
+  $sync_interval_minutes='${interval}';
+  if ( ! ((date("i") * date("H") * 60 + date("i")) % $sync_interval_minutes) && file_exists("/var/lib/docker/containers")) {
+    exec("
+      [[ ! -d /var/lib/docker_bind ]] && mkdir /var/lib/docker_bind
+      if ! mountpoint -q /var/lib/docker_bind; then
+        if ! mount --bind /var/lib/docker /var/lib/docker_bind; then
+          logger -t docker Error: RAM-Disk bind mount failed!
+        fi
+      fi
+      if mountpoint -q /var/lib/docker_bind; then
+        rsync -aH --delete /var/lib/docker/containers/ /var/lib/docker_bind/containers && logger -t docker Success: Backup of RAM-Disk created.
+        umount -l /var/lib/docker_bind
+      else
+        logger -t docker Error: RAM-Disk bind mount failed!
+      fi
+    ");
+  }' > /tmp/RAM-DISK-Dockerlog/monitor
+  
+  # Add automatic backup of Docker RAM-Disk, if enabled
+  if [[ $interval != 0 ]]; then
+  sed -i "/^<?PHP$/a include_once('/tmp/RAM-DISK-Dockerlog/monitor');" /usr/local/emhttp/plugins/dynamix/scripts/monitor
+  fi
+  
+  echo $version > /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Modification applied for $version"
 else
-  logger -t docker "Error: RAM-Disk Mod found incompatible files: $(md5sum /etc/rc.d/rc.docker /usr/local/emhttp/plugins/dynamix/scripts/monitor | xargs)"
+  logger -t RAM-DISK-Dockerlog "Error: RAM-Disk Mod found incompatible file: $(md5sum /etc/rc.d/rc.docker)"
 fi
