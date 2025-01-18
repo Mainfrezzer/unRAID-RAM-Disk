@@ -55,9 +55,14 @@ if [ ! -f "&plgPATH;/settings.cfg" ] ; then
   echo "Configuration file not found. Creating configuration file..."
   echo "30" > "&plgPATH;/settings.cfg"
 fi
+  #ensure no prior versions code exists
+  sed -i '/\$sync_interval_minutes=/,/^\s*}/d' /usr/local/emhttp/plugins/dynamix/scripts/monitor
+  
   upgradepkg --install-new &plgPATH;/&plgNAME;.txz
   mkdir -p /tmp/&name;
 fi
+
+
 
 # Cleaning old source files
 find &plgPATH;/ -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
