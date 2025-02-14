@@ -20,7 +20,7 @@
 - Should make the plugin compatible with all Unraid versions*
 - *I only tested back to 6.9.0
 - Check for possible go file meddling
-- Check for compatibility - if, however unlikely it is, there happens to be a change that would breaking things, do absolutely nothing.
+- Check for compatibility - if, however unlikely it is, there happens to be a change that would be breaking things, do absolutely nothing.
 - Removed script overview
 ###2025.01.21
 Support 6.12.15
