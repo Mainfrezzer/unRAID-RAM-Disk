@@ -2,9 +2,6 @@
 if [[ -f /tmp/RAM-DISK-Dockerlog/modified ]] && [[ -f /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg ]]; then
 sed -i '/# backup json\/logs and remove RAM-Disk/,/logger -t docker RAM-Disk removed/d' /etc/rc.d/rc.docker
 sed -i '/# move json\/logs to RAM-Disk/,/logger -t docker RAM-Disk created/d' /etc/rc.d/rc.docker
-#temporary command to ensure previous versions are getting cleaned up
-sed -i '/# move json\/logs to ram disk/,/logger -t docker RAM-Disk created/d' /etc/rc.d/rc.docker
-#
 sed -i "/include_once(\x27\/tmp\/RAM-DISK-Dockerlog\/monitor\x27);/d" /usr/local/emhttp/plugins/dynamix/scripts/monitor
 rm /tmp/RAM-DISK-Dockerlog/modified
 logger -t RAM-DISK-Dockerlog "Array has been stopped. Modification has been removed"
