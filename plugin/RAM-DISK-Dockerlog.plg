@@ -17,7 +17,7 @@
 <CHANGES>
 ##&name;
 ###2025.02.14
-- Should make the Plugin compatible with all Unraid versions*
+- Should make the plugin compatible with all Unraid versions*
 - *I only tested back to 6.9.0
 - Check for possible go file meddling
 - Check for compatibility - if, however unlikely it is, there happens to be a change that would breaking things, do absolutely nothing.
