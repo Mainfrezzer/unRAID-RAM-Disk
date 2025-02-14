@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "RAM-DISK-Dockerlog">
 <!ENTITY author    "Mainfrezzer">
-<!ENTITY version   "2025.01.21">
+<!ENTITY version   "2025.02.14">
 <!ENTITY launch    "Settings/RAM-Disk">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/main">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -12,10 +12,16 @@
 <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
 ]>
 
-<PLUGIN icon="microchip" name="&name;" author="&author;" launch="&launch;" version="&version;" pluginURL="&pluginURL;"  min="6.12.10" support="https://forums.unraid.net/topic/185193-plugin-ram-disk-for-docker-logs/">
+<PLUGIN icon="microchip" name="&name;" author="&author;" launch="&launch;" version="&version;" pluginURL="&pluginURL;" support="https://forums.unraid.net/topic/185193-plugin-ram-disk-for-docker-logs/">
 
 <CHANGES>
 ##&name;
+###2025.02.14
+- Should make the Plugin compatible with all Unraid versions*
+- *I only tested back to 6.9.0
+- Check for possible go file meddling
+- Check for compatibility - if, however unlikely it is, there happens to be a change that would breaking things, do absolutely nothing.
+- Removed script overview
 ###2025.01.21
 Support 6.12.15
 ###2025.01.18a
@@ -83,19 +89,27 @@ The 'remove' script.
 -->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
+cp &emhttp;/event/stopped /tmp/&name;/stopped
 removepkg &plgPATH;/&plgNAME;.txz
-rm -rf &emhttp;
-rm -rf &plgPATH;
+
 
 if [ -f "/tmp/RAM-DISK-Dockerlog/modified" ] ; then
+rm -rf &plgPATH;
+rm -rf &emhttp;
+mkdir -p &emhttp;/event
+mv /tmp/&name;/stopped &emhttp;/event/
+
 echo ""
 echo ""
 echo "------------------------------------------------------------------------------"
-echo "-------RAM-Disk for Docker logs uninstalled, please reboot your server!-------"
+echo "-------------------RAM-Disk for Docker logs uninstalled!----------------------"
+echo "-------- Please stop your array once to fully remove the modification --------"
 echo "------------------------------------------------------------------------------"
 echo ""
 echo ""
 else
+rm -rf &plgPATH;
+rm -rf &emhttp;
 echo ""
 echo ""
 echo "------------------------------------------------------------------------------"
