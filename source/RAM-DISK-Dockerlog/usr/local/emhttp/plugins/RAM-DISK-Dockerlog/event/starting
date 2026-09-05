@@ -23,7 +23,17 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
 
 
         #load and set backup interval
-        interval=$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
+        interval=$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg 2>/dev/null)
+
+        # The value below is written into PHP that the dynamix monitor runs as root
+        # every minute. Only a whole number from 0 to 60 is valid; anything else
+        # would leave a syntax error in that core script.
+        if [[ ! $interval =~ ^[0-9]+$ ]] || (( 10#$interval > 60 )); then
+            logger -t RAM-DISK-Dockerlog "Invalid backup interval '${interval}' in settings.cfg, using 30"
+            interval=30
+            echo "$interval" > /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg
+        fi
+        interval=$(( 10#$interval ))
 
         cat > /tmp/RAM-DISK-Dockerlog/monitor << EOF
         <?php
