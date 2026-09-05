@@ -12,7 +12,7 @@
 <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
 ]>
 
-<PLUGIN icon="microchip" name="&name;" author="&author;" launch="&launch;" version="&version;" pluginURL="&pluginURL;" support="https://forums.unraid.net/topic/185193-plugin-ram-disk-for-docker-logs/">
+<PLUGIN icon="microchip" name="&name;" author="&author;" launch="&launch;" version="&version;" max="7.99.99" pluginURL="&pluginURL;" support="https://forums.unraid.net/topic/185193-plugin-ram-disk-for-docker-logs/">
 
 <CHANGES>
 ##&name;
