@@ -5,7 +5,7 @@
 <!ENTITY author    "Mainfrezzer">
 <!ENTITY version   "2026.09.15">
 <!ENTITY launch    "Settings/RAM-Disk">
-<!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/main">
+<!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/constant-sync">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
 <!ENTITY plgPATH   "/boot/config/plugins/&name;">
 <!ENTITY plgNAME   "&name;-&version;-x86_64-1">
