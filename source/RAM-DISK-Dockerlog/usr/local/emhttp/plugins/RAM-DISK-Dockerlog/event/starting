@@ -22,14 +22,12 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
          logger -t docker RAM-Disk removed' /etc/rc.d/rc.docker
 
 
-        #load and set backup interval
-        interval=$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
-
         cat > /tmp/RAM-DISK-Dockerlog/monitor << EOF
         <?php
-        \$sync_interval_minutes=${interval};
-        if ( ! ((date("i") * date("H") * 60 + date("i")) % \$sync_interval_minutes) && file_exists("/var/lib/docker/containers")) {
+        if (file_exists("/var/lib/docker/containers")) {
           exec('
+            interval=\$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg 2>/dev/null)
+            case "\$interval" in ""|*[!0-9]*) interval=0 ;; esac
             [[ ! -d /var/lib/docker_bind ]] && mkdir /var/lib/docker_bind
             if ! mountpoint -q /var/lib/docker_bind; then
               if ! mount --bind /var/lib/docker /var/lib/docker_bind; then
@@ -38,7 +36,19 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
               fi
             fi
             if mountpoint -q /var/lib/docker_bind; then
-              rsync -aH --delete /var/lib/docker/containers/ /var/lib/docker_bind/containers
+              tod=\$(( 10#\$(date +%H) * 60 + 10#\$(date +%M) ))
+              if [ "\$interval" -gt 0 ]; then
+                if [ \$(( tod % interval )) -eq 0 ]; then
+                  rsync -aH --delete /var/lib/docker/containers/ /var/lib/docker_bind/containers
+                else
+                  # plain --exclude keeps the existing log backups
+                  rsync -aH --delete --exclude=\*-json.log /var/lib/docker/containers/ /var/lib/docker_bind/containers
+                fi
+              else
+                # no log backups, so drop excluded logs too or removed containers
+                # leave log-only dirs behind
+                rsync -aH --delete --delete-excluded --exclude=\*-json.log /var/lib/docker/containers/ /var/lib/docker_bind/containers
+              fi
               umount -l /var/lib/docker_bind
             else
               /usr/local/emhttp/plugins/dynamix/scripts/notify -e "RAM-DISK-Dockerlog" -s "Error: RAM-Disk bind mount failed!" -i alert
@@ -48,9 +58,8 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
         }
 EOF
   
-        if [[ $interval != 0 ]]; then
-          sed -i "/^<?PHP$/a include_once('/tmp/RAM-DISK-Dockerlog/monitor');" /usr/local/emhttp/plugins/dynamix/scripts/monitor
-        fi
+        # always installed, metadata sync is not optional
+        sed -i "/^<?PHP$/a include_once('/tmp/RAM-DISK-Dockerlog/monitor');" /usr/local/emhttp/plugins/dynamix/scripts/monitor
         echo $version > /tmp/RAM-DISK-Dockerlog/modified
 
     else

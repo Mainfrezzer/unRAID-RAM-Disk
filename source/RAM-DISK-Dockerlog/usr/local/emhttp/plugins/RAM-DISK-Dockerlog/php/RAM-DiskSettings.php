@@ -12,7 +12,9 @@ function readSetting($file) {
 
 function writeSetting($file, $value) {
     file_put_contents($file, $value);
-    shell_exec('value=$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg) && sed -i "s/\\\$sync_interval_minutes=[0-9]\\+;/\\\$sync_interval_minutes="$value";/g" /tmp/RAM-DISK-Dockerlog/monitor');
+    // monitor reads settings.cfg itself; just keep the include installed
+    shell_exec('sed -i "/include_once(\x27\/tmp\/RAM-DISK-Dockerlog\/monitor\x27);/d" /usr/local/emhttp/plugins/dynamix/scripts/monitor');
+    shell_exec('sed -i "/^<?PHP$/a include_once(\x27\/tmp\/RAM-DISK-Dockerlog\/monitor\x27\);" /usr/local/emhttp/plugins/dynamix/scripts/monitor');
 }
 
 $settingValue = readSetting($configFilePath);
@@ -23,16 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($userInput >= 1 && $userInput <= 60) {
         writeSetting($configFilePath, $userInput);
         $settingValue = readSetting($configFilePath);
-        $message = "Setting updated successfully.";
-		if (file_exists($modcheck)){
-		shell_exec('sed -i "/include_once(\x27\/tmp\/RAM-DISK-Dockerlog\/monitor\x27);/d" /usr/local/emhttp/plugins/dynamix/scripts/monitor');
-		shell_exec('sed -i "/^<?PHP$/a include_once(\x27\/tmp/RAM-DISK-Dockerlog/monitor\x27\);" /usr/local/emhttp/plugins/dynamix/scripts/monitor');
-		}
-	} elseif ($userInput == 0) {
-		writeSetting($configFilePath, $userInput);
-		$settingValue = readSetting($configFilePath);
-		shell_exec('sed -i "/include_once(\x27\/tmp\/RAM-DISK-Dockerlog\/monitor\x27);/d" /usr/local/emhttp/plugins/dynamix/scripts/monitor');
-		$message = "Setting updated successfully. Backups are now disabled";
+        $message = "Saved. Metadata syncs every minute regardless of this setting.";
+    } elseif ($userInput == 0) {
+        writeSetting($configFilePath, $userInput);
+        $settingValue = readSetting($configFilePath);
+        $message = "Periodic log backups disabled. Metadata still syncs every minute.";
     } else {
         $message = "Please enter a value between 0 and 60.";
     }
@@ -65,12 +62,15 @@ function check_file_exists($modcheck) {
     <title>RAM-Disk for Docker logs settings</title>
 </head>
 <body>
-    <h1>RAM-Disk Backup Interval Setting</h1>
+    <h1>Docker log backup interval</h1>
     <?php if (isset($message)): ?>
         <p><strong><?php echo htmlspecialchars($message); ?></strong></p>
     <?php endif; ?>
 <div style="width:49%; float:left; border: 0em solid black;">
-<p>The interval is set in minutes (1-60, 0 disables the automatic backup)</p>
+<p>Log backup interval in minutes (1-60). 0 disables periodic log backups; logs are
+still flushed when the array stops.</p>
+<p><b>Container metadata syncs every minute regardless</b>, which is what keeps containers
+intact across an unclean shutdown.</p>
     <form method="post" action="">
         <br>
         <input type="number" id="setting" name="setting" min="0" max="60" value="<?php echo htmlspecialchars($settingValue); ?>" required>
