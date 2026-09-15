@@ -58,6 +58,14 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
               fi
             fi
             if mountpoint -q /var/lib/docker_bind; then
+              find /var/lib/docker_bind/containers/ -type f -name '*-json.log' -print0 |
+              while IFS= read -r -d '' file; do
+                  jsonsource="\${file#/var/lib/docker_bind/containers/}"
+
+                  if [[ ! -f "/var/lib/docker/containers/\$jsonsource" ]]; then
+                      rm -- "\$file"
+                  fi
+              done            
               rsync -aH --delete --exclude="*-json.log" /var/lib/docker/containers/ /var/lib/docker_bind/containers
               umount -l /var/lib/docker_bind
             else
