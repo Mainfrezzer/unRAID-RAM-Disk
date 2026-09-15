@@ -1,5 +1,5 @@
 <?php
-$configFilePath = '/boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg';
+$configFilePath = "/boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg";
 $modcheck = "/tmp/RAM-DISK-Dockerlog/modified";
 if (!file_exists($configFilePath)) {
     die("Configuration file not found.");
@@ -7,33 +7,35 @@ if (!file_exists($configFilePath)) {
 
 function readSetting($file) {
     $content = file_get_contents($file);
-    return trim($content);
+    $lines = preg_split('/\r\n|\r|\n/', trim($content));
+
+    return [
+        'interval' => isset($lines[0]) ? trim($lines[0]) : '30',
+        'metadata' => isset($lines[1]) ? trim($lines[1]) : '0'
+    ];
 }
 
-function writeSetting($file, $value) {
-    file_put_contents($file, $value);
-    shell_exec('value=$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg) && sed -i "s/\\\$sync_interval_minutes=[0-9]\\+;/\\\$sync_interval_minutes="$value";/g" /tmp/RAM-DISK-Dockerlog/monitor');
+function writeSetting($file, $value, $metadata) {
+    file_put_contents($file, $value . PHP_EOL . $metadata);
+    shell_exec('sed -i "s/\\$sync_interval_minutes=[0-9]*;/\\$sync_interval_minutes=' . $value . ';/g" /tmp/RAM-DISK-Dockerlog/monitor');
+    shell_exec('sed -i "s/\\$sync_metadata=[0-9]*;/\\$sync_metadata=' . $metadata . ';/g" /tmp/RAM-DISK-Dockerlog/monitor');
 }
 
-$settingValue = readSetting($configFilePath);
+$settings = readSetting($configFilePath);
+$settingValue = $settings['interval'];
+$metadataValue = $settings['metadata'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userInput = isset($_POST['setting']) ? intval($_POST['setting']) : 30;
+    $metadataInput = isset($_POST['metadata']) ? 1 : 0;
 
-    if ($userInput >= 1 && $userInput <= 60) {
-        writeSetting($configFilePath, $userInput);
-        $settingValue = readSetting($configFilePath);
+    if ($userInput >= 0 && $userInput <= 60) {
+        writeSetting($configFilePath, $userInput, $metadataInput);
+        $settings = readSetting($configFilePath);
+	$settingValue = $settings['interval'];
+	$metadataValue = $settings['metadata'];
         $message = "Setting updated successfully.";
-		if (file_exists($modcheck)){
-		shell_exec('sed -i "/include_once(\x27\/tmp\/RAM-DISK-Dockerlog\/monitor\x27);/d" /usr/local/emhttp/plugins/dynamix/scripts/monitor');
-		shell_exec('sed -i "/^<?PHP$/a include_once(\x27\/tmp/RAM-DISK-Dockerlog/monitor\x27\);" /usr/local/emhttp/plugins/dynamix/scripts/monitor');
-		}
-	} elseif ($userInput == 0) {
-		writeSetting($configFilePath, $userInput);
-		$settingValue = readSetting($configFilePath);
-		shell_exec('sed -i "/include_once(\x27\/tmp\/RAM-DISK-Dockerlog\/monitor\x27);/d" /usr/local/emhttp/plugins/dynamix/scripts/monitor');
-		$message = "Setting updated successfully. Backups are now disabled";
-    } else {
+	} else {
         $message = "Please enter a value between 0 and 60.";
     }
 }
@@ -74,7 +76,11 @@ function check_file_exists($modcheck) {
     <form method="post" action="">
         <br>
         <input type="number" id="setting" name="setting" min="0" max="60" value="<?php echo htmlspecialchars($settingValue); ?>" required>
-        <input type="submit" value="Save">
+	<br><br>
+	<label>
+	<input type="checkbox" id="metadata" name="metadata" value="1" <?php echo ($metadataValue == 1) ? 'checked' : ''; ?>>Sync metadata</label>
+        <br><br>
+	<input type="submit" value="Save">
     </form>
 </div>
 <div style="width: 49%; float:right; border: 0em solid black;">

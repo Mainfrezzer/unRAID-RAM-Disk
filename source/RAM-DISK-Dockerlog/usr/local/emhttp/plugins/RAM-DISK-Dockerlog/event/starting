@@ -23,12 +23,13 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
 
 
         #load and set backup interval
-        interval=$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
-
+        interval=$(sed -n '1p' /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
+	metadata=$(sed -n '2p' /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
         cat > /tmp/RAM-DISK-Dockerlog/monitor << EOF
         <?php
         \$sync_interval_minutes=${interval};
-        if ( ! ((date("i") * date("H") * 60 + date("i")) % \$sync_interval_minutes) && file_exists("/var/lib/docker/containers")) {
+	\$sync_metadata=${metadata};
+        if (!empty(\$sync_interval_minutes) && ! ((date("i") * date("H") * 60 + date("i")) % \$sync_interval_minutes) && file_exists("/var/lib/docker/containers")) {
           exec('
             [[ ! -d /var/lib/docker_bind ]] && mkdir /var/lib/docker_bind
             if ! mountpoint -q /var/lib/docker_bind; then
@@ -45,12 +46,30 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
               logger -t docker Error: RAM-Disk bind mount failed!
             fi
           ');
-        }
+        } else {
+
+	if ( file_exists("/var/lib/docker/containers") && !empty(\$sync_metadata) ) {
+	exec('
+	  [[ ! -d /var/lib/docker_bind ]] && mkdir /var/lib/docker_bind
+	  if ! mountpoint -q /var/lib/docker_bind; then
+              if ! mount --bind /var/lib/docker /var/lib/docker_bind; then
+                /usr/local/emhttp/plugins/dynamix/scripts/notify -e "RAM-DISK-Dockerlog" -s "Error: RAM-Disk bind mount failed!" -i alert
+                logger -t docker Error: RAM-Disk bind mount failed!
+              fi
+            fi
+            if mountpoint -q /var/lib/docker_bind; then
+              rsync -aH --delete --exclude="*-json.log" /var/lib/docker/containers/ /var/lib/docker_bind/containers
+              umount -l /var/lib/docker_bind
+            else
+              /usr/local/emhttp/plugins/dynamix/scripts/notify -e "RAM-DISK-Dockerlog" -s "Error: RAM-Disk bind mount failed!" -i alert
+              logger -t docker Error: RAM-Disk bind mount failed!
+            fi
+	  ');
+	}
+	}
 EOF
   
-        if [[ $interval != 0 ]]; then
-          sed -i "/^<?PHP$/a include_once('/tmp/RAM-DISK-Dockerlog/monitor');" /usr/local/emhttp/plugins/dynamix/scripts/monitor
-        fi
+        sed -i "/^<?PHP$/a include_once('/tmp/RAM-DISK-Dockerlog/monitor');" /usr/local/emhttp/plugins/dynamix/scripts/monitor
         echo $version > /tmp/RAM-DISK-Dockerlog/modified
 
     else
