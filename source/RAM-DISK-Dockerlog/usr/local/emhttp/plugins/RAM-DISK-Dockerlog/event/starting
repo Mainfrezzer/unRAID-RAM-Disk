@@ -23,12 +23,18 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
 
 
         #load and set backup interval
-        interval=$(cat /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
-
+        interval=$(sed -n '1p' /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
+        interval=${interval:-30}
+        metadata=$(sed -n '2p' /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
+        metadata=${metadata:-0}
+        logging=$(sed -n '3p' /boot/config/plugins/RAM-DISK-Dockerlog/settings.cfg)
+        logging=${logging:-0}
         cat > /tmp/RAM-DISK-Dockerlog/monitor << EOF
         <?php
         \$sync_interval_minutes=${interval};
-        if ( ! ((date("i") * date("H") * 60 + date("i")) % \$sync_interval_minutes) && file_exists("/var/lib/docker/containers")) {
+        \$sync_metadata=${metadata};
+        \$sync_logging=${logging};
+        if (!empty(\$sync_interval_minutes) && ! ((date("i") * date("H") * 60 + date("i")) % \$sync_interval_minutes) && file_exists("/var/lib/docker/containers")) {
           exec('
             [[ ! -d /var/lib/docker_bind ]] && mkdir /var/lib/docker_bind
             if ! mountpoint -q /var/lib/docker_bind; then
@@ -38,19 +44,45 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
               fi
             fi
             if mountpoint -q /var/lib/docker_bind; then
-              rsync -aH --delete /var/lib/docker/containers/ /var/lib/docker_bind/containers
+              rsync -aH --delete /var/lib/docker/containers/ /var/lib/docker_bind/containers &&  [ ' . (int)\$sync_logging . ' -eq 1 ]  && logger -t docker Success: Backup of RAM-Disk created.
               umount -l /var/lib/docker_bind
             else
               /usr/local/emhttp/plugins/dynamix/scripts/notify -e "RAM-DISK-Dockerlog" -s "Error: RAM-Disk bind mount failed!" -i alert
               logger -t docker Error: RAM-Disk bind mount failed!
             fi
           ');
-        }
+        } else {
+
+	if ( !empty(\$sync_metadata) && file_exists("/var/lib/docker/containers") ) {
+	exec('
+	  [[ ! -d /var/lib/docker_bind ]] && mkdir /var/lib/docker_bind
+	  if ! mountpoint -q /var/lib/docker_bind; then
+              if ! mount --bind /var/lib/docker /var/lib/docker_bind; then
+                /usr/local/emhttp/plugins/dynamix/scripts/notify -e "RAM-DISK-Dockerlog" -s "Error: RAM-Disk bind mount failed!" -i alert
+                logger -t docker Error: RAM-Disk bind mount failed!
+              fi
+            fi
+            if mountpoint -q /var/lib/docker_bind; then
+              find /var/lib/docker_bind/containers/ -type f -name "*-json.log" -print0 |
+              while IFS= read -r -d "" file; do
+                  jsonsource="\${file#/var/lib/docker_bind/containers/}"
+
+                  if [[ ! -f "/var/lib/docker/containers/\$jsonsource" ]]; then
+                      rm -- "\$file"
+                  fi
+              done            
+              rsync -aH --delete --exclude="*-json.log" /var/lib/docker/containers/ /var/lib/docker_bind/containers &&  [ ' . (int)\$sync_logging . ' -eq 1 ]  && logger -t docker Success: Integrity Sync.
+              umount -l /var/lib/docker_bind
+            else
+              /usr/local/emhttp/plugins/dynamix/scripts/notify -e "RAM-DISK-Dockerlog" -s "Error: RAM-Disk bind mount failed!" -i alert
+              logger -t docker Error: RAM-Disk bind mount failed!
+            fi
+	  ');
+	}
+	}
 EOF
   
-        if [[ $interval != 0 ]]; then
-          sed -i "/^<?PHP$/a include_once('/tmp/RAM-DISK-Dockerlog/monitor');" /usr/local/emhttp/plugins/dynamix/scripts/monitor
-        fi
+        sed -i "/^<?PHP$/a include_once('/tmp/RAM-DISK-Dockerlog/monitor');" /usr/local/emhttp/plugins/dynamix/scripts/monitor
         echo $version > /tmp/RAM-DISK-Dockerlog/modified
 
     else

@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "RAM-DISK-Dockerlog">
 <!ENTITY author    "Mainfrezzer">
-<!ENTITY version   "2026.04.22">
+<!ENTITY version   "2026.09.19">
 <!ENTITY launch    "Settings/RAM-Disk">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/main">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -16,6 +16,9 @@
 
 <CHANGES>
 ##&name;
+###2026.09.19
+- optional force integrity sync every minute
+- optional logger success messages
 ###2026.04.22
 - remove success messages
 - add notifications on failure
@@ -40,7 +43,7 @@ The 'plugin' package file.
 -->
 <FILE Name="&plgPATH;/&plgNAME;.txz">
 <URL>&gitURL;/archive/&plgNAME;.txz</URL>
-<SHA256>53e7c6d034f427ba94a7ede89abeb2eaac3469461def2e405b928d941fc085a9</SHA256>
+<SHA256>1ac3427443e8b27baf6118fb3313f34263f0299c98a2233ebad0793c791ee00d</SHA256>
 </FILE>
 
 <!--
@@ -48,7 +51,7 @@ The 'plugin' package MD5 hash.
 -->
 <FILE Name="&plgPATH;/&plgNAME;.md5">
 <URL>&gitURL;/archive/&plgNAME;.md5</URL>
-<SHA256>9935e83ff486ead3e11a5d07e04fe26eb77761b1de64312cc83e874b25e5a67e</SHA256>
+<SHA256>e574b530842b7e0c9069b79872fab33a67a21163d08428096bfc16bb36239f3b</SHA256>
 </FILE>
 
 <!--
