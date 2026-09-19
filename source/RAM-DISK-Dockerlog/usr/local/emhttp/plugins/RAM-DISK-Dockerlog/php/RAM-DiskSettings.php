@@ -11,29 +11,34 @@ function readSetting($file) {
 
     return [
         'interval' => isset($lines[0]) ? trim($lines[0]) : '30',
-        'metadata' => isset($lines[1]) ? trim($lines[1]) : '0'
+        'metadata' => isset($lines[1]) ? trim($lines[1]) : '0',
+        'logging' => isset($lines[2]) ? trim($lines[2]) : '0'
     ];
 }
 
-function writeSetting($file, $value, $metadata) {
-    file_put_contents($file, $value . PHP_EOL . $metadata);
+function writeSetting($file, $value, $metadata, $logging) {
+    file_put_contents($file, $value . PHP_EOL . $metadata . PHP_EOL . $logging);
     shell_exec('sed -i "s/\\$sync_interval_minutes=[0-9]*;/\\$sync_interval_minutes=' . $value . ';/g" /tmp/RAM-DISK-Dockerlog/monitor');
     shell_exec('sed -i "s/\\$sync_metadata=[0-9]*;/\\$sync_metadata=' . $metadata . ';/g" /tmp/RAM-DISK-Dockerlog/monitor');
+    shell_exec('sed -i "s/\\$sync_logging=[0-9]*;/\\$sync_logging=' . $logging . ';/g" /tmp/RAM-DISK-Dockerlog/monitor');
 }
 
 $settings = readSetting($configFilePath);
 $settingValue = $settings['interval'];
 $metadataValue = $settings['metadata'];
+$loggingValue = $settings['logging'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userInput = isset($_POST['setting']) ? intval($_POST['setting']) : 30;
     $metadataInput = isset($_POST['metadata']) ? 1 : 0;
+    $loggingInput = isset($_POST['logging']) ? 1 : 0;
 
     if ($userInput >= 0 && $userInput <= 60) {
-        writeSetting($configFilePath, $userInput, $metadataInput);
+        writeSetting($configFilePath, $userInput, $metadataInput, $loggingInput);
         $settings = readSetting($configFilePath);
 	$settingValue = $settings['interval'];
 	$metadataValue = $settings['metadata'];
+    $loggingValue = $settings['logging'];
         $message = "Setting updated successfully.";
 	} else {
         $message = "Please enter a value between 0 and 60.";
@@ -76,11 +81,22 @@ function check_file_exists($modcheck) {
     <form method="post" action="">
         <br>
         <input type="number" id="setting" name="setting" min="0" max="60" value="<?php echo htmlspecialchars($settingValue); ?>" required>
-	<br><br>
-	<label>
-	<input type="checkbox" id="metadata" name="metadata" value="1" <?php echo ($metadataValue == 1) ? 'checked' : ''; ?>>Sync metadata</label>
         <br><br>
-	<input type="submit" value="Save">
+        <label>
+        <input type="checkbox" id="metadata" name="metadata" value="1" <?php echo ($metadataValue == 1) ? 'checked' : ''; ?>>Force Integrity Sync</label>
+        <br>
+    <blockquote class="inline_help" style="display: block; align=right">
+        <p>Checking this option syncs everything, except the container logs, every minute. Highly recommended if you set 0 above</p>
+    </blockquote>
+        <br>
+    <br><br>
+        <label>
+        <input type="checkbox" id="logging" name="logging" value="1" <?php echo ($loggingValue == 1) ? 'checked' : ''; ?>>Enable Logging</label>
+    <blockquote class="inline_help" style="display: block; align=right">
+        <p>Enables logger for success messages in syslog</p>
+    </blockquote>
+        <br><br>
+        <input type="submit" value="Save">
     </form>
 </div>
 <div style="width: 49%; float:right; border: 0em solid black;">

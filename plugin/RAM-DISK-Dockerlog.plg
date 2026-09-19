@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "RAM-DISK-Dockerlog">
 <!ENTITY author    "Mainfrezzer">
-<!ENTITY version   "2026.09.15b">
+<!ENTITY version   "2026.09.19">
 <!ENTITY launch    "Settings/RAM-Disk">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/constant-sync">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -16,6 +16,8 @@
 
 <CHANGES>
 ##&name;
+###2026.09.19
+- make yap optional
 ###2026.09.15b
 - fix wrong signs
 ###2026.09.15a
@@ -46,7 +48,7 @@ The 'plugin' package file.
 -->
 <FILE Name="&plgPATH;/&plgNAME;.txz">
 <URL>&gitURL;/archive/&plgNAME;.txz</URL>
-<SHA256>1fb805969cd9cfed52a5458762559a10e0f0f04c07eeb88dfe80628b9f0b69fb</SHA256>
+<SHA256>09d1cf805fc80f9b1fc0c4eb5eefce965b94eb6091abbff676d1aee0ccef2230</SHA256>
 </FILE>
 
 <!--
@@ -54,7 +56,7 @@ The 'plugin' package MD5 hash.
 -->
 <FILE Name="&plgPATH;/&plgNAME;.md5">
 <URL>&gitURL;/archive/&plgNAME;.md5</URL>
-<SHA256>52b461db52d534fd8b90efd5648893049c355791ccf9bdd255f7d8c748c3613d</SHA256>
+<SHA256>de76f4ee6b4bb4a6a2bd16287e0cf86e6db020aea671716b47cac44535173262</SHA256>
 </FILE>
 
 <!--
