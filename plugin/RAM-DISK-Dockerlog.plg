@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "RAM-DISK-Dockerlog">
 <!ENTITY author    "Mainfrezzer">
-<!ENTITY version   "2026.10.09">
+<!ENTITY version   "2026.10.09a">
 <!ENTITY launch    "Settings/RAM-Disk">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/main">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -16,6 +16,8 @@
 
 <CHANGES>
 ##&name;
+###2026.10.09a
+- fix below 7.3.3 check, sorry
 ###2026.10.09
 - fix rsync insecure-links message in 7.3.3+
 ###2026.09.19
@@ -45,7 +47,7 @@ The 'plugin' package file.
 -->
 <FILE Name="&plgPATH;/&plgNAME;.txz">
 <URL>&gitURL;/archive/&plgNAME;.txz</URL>
-<SHA256>e35d858098d55af36bbdfc4328da3e94a4a47e59f4f439114462ef7c1b8a2da4</SHA256>
+<SHA256>b1c33a445acc7399e032b9ef9a24a37039b569cf0915acf65ab67378e4c79d94</SHA256>
 </FILE>
 
 <!--
@@ -53,7 +55,7 @@ The 'plugin' package MD5 hash.
 -->
 <FILE Name="&plgPATH;/&plgNAME;.md5">
 <URL>&gitURL;/archive/&plgNAME;.md5</URL>
-<SHA256>00b4e8f3907f8939170b30f13a1e49bc8fda674949647ee2cce2aa5131b99f74</SHA256>
+<SHA256>8739278f1ef05c67c7ab46e186d261600c25998f4cca6f38b3a781f326915a43</SHA256>
 </FILE>
 
 <!--

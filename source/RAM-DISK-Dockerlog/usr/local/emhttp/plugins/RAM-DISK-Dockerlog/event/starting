@@ -9,7 +9,7 @@ if grep -q 'nohup $UNSHARE --propagation slave -- $DOCKER' /etc/rc.d/rc.docker &
         
         #Check version for rsync changes
         source /etc/unraid-version
-        if [[ "$version" == "7.3.3" ]] || [[ "$(printf '%s\n' "$version" "$required" | sort -V | tail -n1)" == "$version" ]]; then
+        if [[ "$version" == "7.3.3" ]] || [[ "$(printf '%s\n' "$version" "7.3.3" | sort -V | tail -n1)" == "$version" ]]; then
         sed -i '/nohup $UNSHARE --propagation slave -- $DOCKER/i \
          # move json/logs to RAM-Disk\
          rsync -aH --delete --insecure-links /var/lib/docker/containers/ ${DOCKER_APP_CONFIG_PATH%/}/containers_backup\
