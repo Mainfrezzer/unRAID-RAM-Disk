@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "RAM-DISK-Dockerlog">
 <!ENTITY author    "Mainfrezzer">
-<!ENTITY version   "2026.10.09a">
+<!ENTITY version   "2026.10.23">
 <!ENTITY launch    "Settings/RAM-Disk">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-RAM-Disk/main">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -16,6 +16,8 @@
 
 <CHANGES>
 ##&name;
+###2026.10.23
+- change version check to rsync error message check as 7.2.9 is unknown
 ###2026.10.09a
 - fix below 7.3.3 check, sorry
 ###2026.10.09
@@ -47,7 +49,7 @@ The 'plugin' package file.
 -->
 <FILE Name="&plgPATH;/&plgNAME;.txz">
 <URL>&gitURL;/archive/&plgNAME;.txz</URL>
-<SHA256>b1c33a445acc7399e032b9ef9a24a37039b569cf0915acf65ab67378e4c79d94</SHA256>
+<SHA256>13f9499678a1b17c5ad5ace972eb981ed908c6d9a73a236ae739c701186856db</SHA256>
 </FILE>
 
 <!--
@@ -55,7 +57,7 @@ The 'plugin' package MD5 hash.
 -->
 <FILE Name="&plgPATH;/&plgNAME;.md5">
 <URL>&gitURL;/archive/&plgNAME;.md5</URL>
-<SHA256>8739278f1ef05c67c7ab46e186d261600c25998f4cca6f38b3a781f326915a43</SHA256>
+<SHA256>467f1dcb13a3369cf8498914906aa60b2d672f4501df739a8ad49c82ef07098c</SHA256>
 </FILE>
 
 <!--
